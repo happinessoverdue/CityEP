@@ -46,20 +46,20 @@ for solvingNo in solvingList:
         loginActionTestList[solvingNo], mqList[solvingNo]))
     prcList.append(prc)
 
-status = False
-while True:
-    nt = time.localtime()
-    if status == False and (nt[3] == 6 or nt[3] == 11 or nt[3] == 17):
-        for i in solvingList:
-            prcList[i].start()
-        print 'all is on'
-        status = True
-    elif status == True and (nt[3] == 8 or nt[3] == 13 or nt[3] == 19):
-        for i in solvingList:
-            prcList[i].terminate()
-        print 'all is off'
-        status = False
-    time.sleep(30)
+# status = False
+# while True:
+#     nt = time.localtime()
+#     if status == False and (nt[3] == 6 or nt[3] == 11 or nt[3] == 17):
+#         for i in solvingList:
+#             prcList[i].start()
+#         print 'all is on'
+#         status = True
+#     elif status == True and (nt[3] == 8 or nt[3] == 13 or nt[3] == 19):
+#         for i in solvingList:
+#             prcList[i].terminate()
+#         print 'all is off'
+#         status = False
+#     time.sleep(30)
 
-# for i in solvingList:
-#     prcListp[i].start()
+for i in solvingList:
+     prcList[i].start()

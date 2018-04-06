@@ -1,7 +1,6 @@
 # coding=utf-8
 
 import pika
-#import os
 import socket
 
 
