@@ -1,0 +1,145 @@
+[  9.99999523e-01   4.85709144e-08   5.84642157e-09   4.12964746e-10
+   4.33782333e-07]
+the class is: background, its probability is 1.000000
+0 1.0
+[  9.99992013e-01   9.25964230e-08   1.97356371e-07   1.22033114e-07
+   7.51957668e-06]
+the class is: background, its probability is 0.999992
+0 0.999992
+[  9.99420881e-01   2.28615909e-06   5.72143745e-06   4.44992591e-04
+   1.26169209e-04]
+the class is: background, its probability is 0.999421
+0 0.999421
+[rtsp @ 0x18af6c0] method DESCRIBE failed: 404 Not Found
+
+(python:13400): GLib-GObject-CRITICAL **: g_object_set: assertion 'G_IS_OBJECT (object)' failed
+Process Process-4:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/usr/lib/python2.7/multiprocessing/process.py", line 114, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/htr/PycharmProjects/CityEP/Main.py", line 113, in solving
+    image = img_as_float(frame).astype(np.float32)
+  File "/usr/lib/python2.7/dist-packages/skimage/util/dtype.py", line 287, in img_as_float
+    return convert(image, np.float64, force_copy)
+  File "/usr/lib/python2.7/dist-packages/skimage/util/dtype.py", line 99, in convert
+    raise ValueError("can not convert %s to %s." % (dtypeobj_in, dtypeobj))
+ValueError: can not convert object to float64.
+[  1.71497270e-01   8.27558637e-01   1.46511884e-04   7.92675826e-04
+   4.89677404e-06]
+the class is: dust, its probability is 0.827559
+1 0.827559
+1 0.827559
+./recorded/2018-04-06-17-00-46-475.jpg
+[  9.99999642e-01   2.39518876e-08   4.53788696e-09   9.05577974e-11
+   4.16682951e-07]
+the class is: background, its probability is 1.000000
+0 1.0
+[  9.99976397e-01   1.35055259e-07   1.93009527e-07   1.07393205e-07
+   2.31217527e-05]
+the class is: background, its probability is 0.999976
+0 0.999976
+[  9.98973727e-01   4.51284404e-06   8.95699122e-06   9.70861642e-04
+   4.18936870e-05]
+the class is: background, its probability is 0.998974
+0 0.998974
+[  2.95763046e-01   7.02606738e-01   2.36340915e-04   1.38617447e-03
+   7.58407077e-06]
+the class is: dust, its probability is 0.702607
+1 0.702607
+[  9.99999762e-01   2.43876059e-07   1.92681053e-08   5.49863592e-11
+   5.39380309e-08]
+the class is: background, its probability is 1.000000
+0 1.0
+[  9.99993324e-01   1.77060755e-07   2.56655937e-07   8.79745130e-08
+   6.17476962e-06]
+the class is: background, its probability is 0.999993
+0 0.999993
+[  9.99552548e-01   1.43521720e-06   8.02442901e-06   2.39664951e-04
+   1.98423164e-04]
+the class is: background, its probability is 0.999553
+0 0.999553
+[  7.38296211e-02   9.24608052e-01   1.32666712e-04   1.42775569e-03
+   1.94447148e-06]
+the class is: dust, its probability is 0.924608
+1 0.924608
+[  9.99999881e-01   1.70866997e-07   1.50420671e-08   3.07125701e-12
+   4.58519409e-08]
+the class is: background, its probability is 1.000000
+0 1.0
+[  9.99977708e-01   2.70406872e-07   6.36995196e-07   3.04147529e-09
+   2.14934971e-05]
+the class is: background, its probability is 0.999978
+0 0.999978
+[h264 @ 0x7fe314a921e0] error while decoding MB 15 4, bytestream -7
+[  9.98182833e-01   1.72009168e-05   2.99147960e-05   8.17527995e-04
+   9.52490838e-04]
+the class is: background, its probability is 0.998183
+0 0.998183
+[  7.94239759e-01   2.04575911e-01   2.71919213e-04   9.04421788e-04
+   7.99995451e-06]
+the class is: background, its probability is 0.794240
+0 0.79424
+[  9.99999762e-01   1.31161144e-07   2.80242904e-08   2.73631508e-12
+   1.47066771e-07]
+the class is: background, its probability is 1.000000
+0 1.0
+[  9.99933720e-01   2.77983258e-06   2.88087836e-06   3.27490898e-06
+   5.74559745e-05]
+the class is: background, its probability is 0.999934
+0 0.999934
+[  9.94593203e-01   1.50653173e-03   3.86280194e-03   1.86117788e-07
+   3.72404793e-05]
+the class is: background, its probability is 0.994593
+0 0.994593
+[  1.66095451e-01   8.32166374e-01   1.13413706e-04   1.62099523e-03
+   3.83120368e-06]
+the class is: dust, its probability is 0.832166
+1 0.832166
+1 0.832166
+./recorded/2018-04-06-17-01-00-475.jpg
+[  9.99999881e-01   9.00558561e-08   1.24033228e-08   2.45267695e-12
+   4.15354933e-08]
+the class is: background, its probability is 1.000000
+0 1.0
+[h264 @ 0x7fe31431cb20] error while decoding MB 42 63, bytestream -11
+[  9.97658610e-01   7.22594541e-06   2.10330518e-06   1.69804295e-07
+   2.33189459e-03]
+the class is: background, its probability is 0.997659
+0 0.997659
+[  9.98902321e-01   5.47350919e-06   3.11018266e-05   2.60437100e-05
+   1.03506399e-03]
+the class is: background, its probability is 0.998902
+0 0.998902
+[  1.04825139e-01   8.92686188e-01   1.54192181e-04   2.32850341e-03
+   5.95902384e-06]
+the class is: dust, its probability is 0.892686
+1 0.892686
+[  9.99999881e-01   7.96331960e-08   2.43179930e-08   2.63883707e-12
+   3.74133471e-08]
+the class is: background, its probability is 1.000000
+0 1.0
+[  9.96948659e-01   1.35451998e-03   2.35673971e-04   1.43211466e-04
+   1.31804706e-03]
+the class is: background, its probability is 0.996949
+0 0.996949
+[h264 @ 0x7fe3143059c0] error while decoding MB 77 48, bytestream -7
+[  1.71719715e-01   8.27183187e-01   1.35970098e-04   9.56525444e-04
+   4.63640254e-06]
+the class is: dust, its probability is 0.827183
+1 0.827183
+[  9.99998569e-01   8.46929879e-07   2.29693399e-07   7.88809407e-10
+   3.62734369e-07]
+the class is: background, its probability is 0.999999
+0 0.999999
+the  0 -th processing has been terminated!!!
+the  1 -th processing has been terminated!!!
+the  2 -th processing has been terminated!!!
+the  3 -th processing has been terminated!!!
+the  4 -th processing has been terminated!!!
+Exception AttributeError: "'list' object has no attribute 'close'" in <bound method MessageQueue.__del__ of <MessageQueue.MessageQueue instance at 0x7fe356091cb0>> ignored
+Exception AttributeError: "'list' object has no attribute 'close'" in <bound method MessageQueue.__del__ of <MessageQueue.MessageQueue instance at 0x7fe356091b00>> ignored
+Exception AttributeError: "'list' object has no attribute 'close'" in <bound method MessageQueue.__del__ of <MessageQueue.MessageQueue instance at 0x7fe356091950>> ignored
+Exception AttributeError: "'list' object has no attribute 'close'" in <bound method MessageQueue.__del__ of <MessageQueue.MessageQueue instance at 0x7fe3560917a0>> ignored
+Exception AttributeError: "'list' object has no attribute 'close'" in <bound method MessageQueue.__del__ of <MessageQueue.MessageQueue instance at 0x7fe3560915f0>> ignored

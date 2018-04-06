@@ -10,6 +10,7 @@ import random
 import string
 import IntelligentVideoProcess as IVP
 import base64
+import os
 
 '''
 sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -77,9 +78,6 @@ def solving(loginActionTest, mq):
             if n > netagain:
                 print 'Please check the network'
                 break
-            # loginActionTest = Login.LoginActionTest('001108', 'admin',
-            #                                         'f8aa14da2301e201e817f5b8667a36bb40c8ca49da69b3470a74d0f4ec194961',
-            #                                         '59.207.63.1', 8033, '/services/VmsSdkWebService')
 
             tgt = loginActionTest.sdkLogin()
             st = loginActionTest.applyToken(tgt)
@@ -89,8 +87,6 @@ def solving(loginActionTest, mq):
             ivp = IVP.IntelligentVideoProcess()
 
             # 创建消息队列
-            # mq = MQ.MessageQueue('skyeye-video', 'videoAnalysis!', '123.160.220.40')
-            # mq = MQ.MessageQueue('skyeye-video', 'videoAnalysis!', '59.207.34.160')
             mq.buildConnAndQueue()
 
             # 读取图像
@@ -180,23 +176,29 @@ def solving(loginActionTest, mq):
             status[''] = endtime.strftime(
                 "%Y-%m-%d %H:%M:%S") + ' ' + str(endtime.microsecond / 1000)
             status[''] = '1'
-            mq.sendStatus(JSONEncoder().encode(status))
+            #mq.sendStatus(JSONEncoder().encode(status))
 
             # save images
-            filename = './CAMERA'+loginActionTest.CAMERAINDEXCODE+'/'+ \
+            imgpath = './CAMERA'+loginActionTest.CAMERAINDEXCODE
+            filename =  imgpath + '/' + \
                         readtime.strftime("%Y-%m-%d-%H-%M-%S-") + \
                         str(readtime.microsecond / 1000) + '.jpg'
-
+            isExists = os.path.exists(imgpath)
+            if not isExists:
+                os.mkdir(imgpath)
             # filename = './recorded/' + \
             #     readtime.strftime("%Y-%m-%d-%H-%M-%S-") + \
             #     str(readtime.microsecond / 1000) + '.jpg'
+            print ('\033[1;31;40m')
+            print filename
+            print '\033[0m'
             cv2.imwrite(filename, frame)
 
         else:
             frame_num = frame_num + 1
 
         # Display the resulting frame
-        cv2.imshow('frame', frame)
+        # cv2.imshow('frame', frame)
         if cv2.waitKey(10) & 0xFF == ord('q'):
             break
 

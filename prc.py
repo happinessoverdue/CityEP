@@ -14,3 +14,9 @@ def ff(c):
         print c
         c += 1
         time.sleep(1)
+
+fp = open("pidlist.txt",'r')
+pid = fp.read()
+pidlist = pid.split(',')
+for pd in pidlist:
+    print type(pd)
