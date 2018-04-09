@@ -116,7 +116,7 @@ def solving(loginActionTest, mq):
 
             frame_num = 0
             msg = {}
-            msg['cameraIndexCode'] = loginActionTest.CAMERAINDEXCODE
+            msg['cameraIndexCode'] = str(loginActionTest.CAMERAINDEXCODE)
             msg['serverIp'] = loginActionTest.SERVICEIP
             msg['monitorType'] = 'M' + "%03d" % ivp.cls
             msg['probability'] = "%.4f" % ivp.prob
@@ -147,7 +147,7 @@ def solving(loginActionTest, mq):
 
             # 生成6位随机数
             slcNum = [random.choice(string.digits) for i in range(6)]
-            msg['seqNb'] = loginActionTest.CAMERAINDEXCODE + \
+            msg['seqNb'] = str(loginActionTest.CAMERAINDEXCODE) + \
                 endtime.strftime("%Y%m%d%H%M%S") + '-' + \
                 ''.join([i for i in slcNum])
             # print JSONEncoder().encode(msg)
@@ -176,20 +176,20 @@ def solving(loginActionTest, mq):
             status[''] = endtime.strftime(
                 "%Y-%m-%d %H:%M:%S") + ' ' + str(endtime.microsecond / 1000)
             status[''] = '1'
-            #mq.sendStatus(JSONEncoder().encode(status))
+            # mq.sendStatus(JSONEncoder().encode(status))
 
             # save images
-            imgpath = './CAMERA'+loginActionTest.CAMERAINDEXCODE
-            filename =  imgpath + '/' + \
-                        readtime.strftime("%Y-%m-%d-%H-%M-%S-") + \
-                        str(readtime.microsecond / 1000) + '.jpg'
+            imgpath = './CAMERA' + str(loginActionTest.CAMERAINDEXCODE)
+            filename = imgpath + '/' + \
+                readtime.strftime("%Y-%m-%d-%H-%M-%S-") + \
+                str(readtime.microsecond / 1000) + '.jpg'
             isExists = os.path.exists(imgpath)
             if not isExists:
                 os.mkdir(imgpath)
             # filename = './recorded/' + \
             #     readtime.strftime("%Y-%m-%d-%H-%M-%S-") + \
             #     str(readtime.microsecond / 1000) + '.jpg'
-            print ('\033[1;31;40m')
+            print '\033[1;31;40m'
             print filename
             print '\033[0m'
             cv2.imwrite(filename, frame)
