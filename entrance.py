@@ -7,8 +7,10 @@ import configparser
 import Main
 import time
 import os
+import sys
 
-timerange = '6:30-7:30,10:20-13:22,16:10-21:50'
+
+timerange = '6:30-8:30,10:20-13:22,16:10-18:19,23:30-23:31,23:32-23:33'
 # 时间要求如字符串变量timerange所示
 # 时间区间以xx:xx-xx:xx的形式表示，每两个时间区间之间用','隔开
 # 注意时间区间为左闭右开区间
@@ -93,7 +95,10 @@ if __name__ == "__main__":
     #     prc = Process(target=Main.solving, args=(
     #         loginActionTestList[solvingNo], mqList[solvingNo]))
     #     prcList.append(prc)
-
+    timeSolve()
+    if len(startList) != len(endList):
+        print "Time-range is on wrong status!"
+        sys.exit()
     status = False
     while True:
         nt = time.localtime()
@@ -113,18 +118,24 @@ if __name__ == "__main__":
         elif status == True and not isInTimeRange:
             fexist = os.path.exists("pidlist.txt")
             if fexist:
-                os.remove("pidlist.txt")
+                fp = open("pidlist.txt", 'w')
+                fp.truncate()
+                fp.write(str(os.getpid()))
+                fp.close()
             for i in solvingList:
                 prcList[i].terminate()
                 print '%d-th processing has been terminated' % i
+            print "And Then has delete the subprocesses' pids in file named pidlist.txt"
             del prcList[:]
             status = False
         elif not isInTimeRange:
             fexist = os.path.exists("pidlist.txt")
             del prcList[:]
             if fexist:
-                os.remove("pidlist.txt")
-                print "has remove the file named pidlist.txt"
+                fp = open("pidlist.txt", 'w')
+                fp.truncate()
+                fp.write(str(os.getpid()))
+                fp.close()
         time.sleep(60)
 
 # for i in solvingList:
