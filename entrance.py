@@ -8,6 +8,40 @@ import Main
 import time
 import os
 
+timerange = '6:30-7:30,10:20-13:22,16:10-21:50'
+# 时间要求如字符串变量timerange所示
+# 时间区间以xx:xx-xx:xx的形式表示，每两个时间区间之间用','隔开
+# 注意时间区间为左闭右开区间
+startList = []
+endList = []
+
+
+def timeSolve():
+    tstr = timerange.split(',')
+    i = 0
+    for s in tstr:
+        tstr[i] = s.split('-')
+        start = tstr[i][0].split(':')
+        end = tstr[i][1].split(':')
+        start[0] = int(start[0])
+        start[1] = int(start[1])
+        end[0] = int(end[0])
+        end[1] = int(end[1])
+        startList.append(start)
+        endList.append(end)
+        i += 1
+    # print tstr
+    return False
+
+
+def timeJudge(nowh, nowm):
+    l = len(startList)
+    for i in range(l):
+        if(nowh > startList[i][0] or nowh == startList[i][0] and nowm >= startList[i][1]):
+            if(nowh < endList[i][0] or nowh == endList[i][0] and nowm < endList[i][1]):
+                return True
+    return False
+
 
 def ucode2utf(conflist):
     rconflist = []
@@ -63,7 +97,8 @@ if __name__ == "__main__":
     status = False
     while True:
         nt = time.localtime()
-        if status == False and (nt[3] >= 7 and nt[3] <= 8 or nt[3] >= 11 and nt[3] <= 13 or nt[3] >= 16 and nt[3] <= 17):
+        isInTimeRange = timeJudge(nt[3], nt[4])
+        if status == False and isInTimeRange:
             del prcList[:]
             prcList = prcListInit(solvingList, loginActionTestList, mqList)
             fp = open("pidlist.txt", 'w')
@@ -75,7 +110,7 @@ if __name__ == "__main__":
             fp.write(str(os.getpid()))
             fp.close()
             status = True
-        elif status == True and not (nt[3] >= 7 and nt[3] <= 8 or nt[3] >= 11 and nt[3] <= 13 or nt[3] >= 16 and nt[3] <= 17):
+        elif status == True and not isInTimeRange:
             fexist = os.path.exists("pidlist.txt")
             if fexist:
                 os.remove("pidlist.txt")
@@ -84,7 +119,7 @@ if __name__ == "__main__":
                 print '%d-th processing has been terminated' % i
             del prcList[:]
             status = False
-        elif not (nt[3] >= 7 and nt[3] <= 8 or nt[3] >= 11 and nt[3] <= 13 or nt[3] >= 16 and nt[3] <= 17):
+        elif not isInTimeRange:
             fexist = os.path.exists("pidlist.txt")
             del prcList[:]
             if fexist:
