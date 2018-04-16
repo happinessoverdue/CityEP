@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from multiprocessing import *
 import Login
 import MessageQueue as MQ
@@ -10,7 +9,7 @@ import os
 import sys
 
 
-timerange = '6:30-8:30,10:20-13:22,16:10-18:19,23:30-23:31,23:32-23:33'
+timerange = '6:30-8:30,11:30-13:30,15:21-16:55,17:29-18:55'
 # 时间要求如字符串变量timerange所示
 # 时间区间以xx:xx-xx:xx的形式表示，每两个时间区间之间用','隔开
 # 注意时间区间为左闭右开区间
