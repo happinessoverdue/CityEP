@@ -1,6 +1,6 @@
 # coding:utf-8
 
-
+import configparser
 import cv2
 from skimage import img_as_float
 import numpy as np
@@ -11,6 +11,8 @@ import string
 import IntelligentVideoProcess as IVP
 import base64
 import os
+import MessageQueue as MQ
+import Login
 
 '''
 sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -205,3 +207,40 @@ def solving(loginActionTest, mq):
     # When everything done, release the capture
     cap.release()
     cv2.destroyAllWindows()
+
+
+def ucode2utf(conflist):
+    rconflist = []
+    for us in conflist:
+        rconflist.append(us[1].encode('utf-8'))
+    return rconflist
+
+
+if __name__ == "__main__":
+    lgaList = []
+    mqList = []
+    ccf = configparser.ConfigParser()
+    ccf.read('SingleCamera.ini')
+    for sec in ccf.sections():
+        clist = ucode2utf(ccf.items(sec))
+        loginActionTest = Login.LoginActionTest(
+            clist[0], clist[1], clist[2], clist[3], int(clist[4]), clist[5])
+        lgaList.append(loginActionTest)
+    print len(lgaList)
+    mcf = configparser.ConfigParser()
+    mcf.read('SingleMessageServer.ini')
+    for sec in mcf.sections():
+        mlist = ucode2utf(mcf.items(sec))
+        mq = MQ.MessageQueue(mlist[0], mlist[1], mlist[2])
+        mqList.append(mq)
+    print len(mqList)
+    pcf = configparser.ConfigParser()
+    pcf.read('ProcessInfo.ini')
+    optname = 'camera' + lgaList[0].CAMERAINDEXCODE + 'SNG1'
+    SNGINDEX = 2
+    while pcf.has_option('process', optname):
+        optname = 'camera' + lgaList[0].CAMERAINDEXCODE + 'SNG' + str(SNGINDEX)
+        SNGINDEX += 1
+    pcf.set('process', optname, str(os.getpid()))
+    pcf.write(open('ProcessInfo.ini', 'w'))
+    solving(lgaList[0], mqList[0])

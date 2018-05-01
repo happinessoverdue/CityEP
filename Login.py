@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 
 import socket
 
@@ -6,7 +6,7 @@ import socket
 class LoginActionTest:
 
     def __init__(self, cameraIndexCode, loginAccount, password, serverIP, serverPort, webservicePath,
-                 streamType = 0, clientIP='127.0.0.1', clientMac='D8:9E:F3:25:B4:E2'):
+                 streamType=0, clientIP='127.0.0.1', clientMac='D8:9E:F3:25:B4:E2'):
         self.CAMERAINDEXCODE = cameraIndexCode
         self.LOGINACCOUNT = loginAccount
         self.PASSWORD = password
@@ -30,10 +30,10 @@ class LoginActionTest:
     def sdkLogin(self):
         body = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ws=\"http:" \
                "//ws.vms.ivms6.hikvision.com\"><soapenv:Header/><soapenv:Body><ws:sdkLogin><ws:loginAccount>" \
-        + self.LOGINACCOUNT + "</ws:loginAccount><ws:password>" + self.PASSWORD + "</ws:password><ws:serviceIp>" \
-        + self.SERVICEIP + "</ws:serviceIp><ws:clientIp>" + self.CLIENTIP + "</ws:clientIp><ws:clientMac>" \
-        + self.CLIENTMAC \
-        + "</ws:clientMac></ws:sdkLogin></soapenv:Body></soapenv:Envelope>\r\n"
+            + self.LOGINACCOUNT + "</ws:loginAccount><ws:password>" + self.PASSWORD + "</ws:password><ws:serviceIp>" \
+            + self.SERVICEIP + "</ws:serviceIp><ws:clientIp>" + self.CLIENTIP + "</ws:clientIp><ws:clientMac>" \
+            + self.CLIENTMAC \
+            + "</ws:clientMac></ws:sdkLogin></soapenv:Body></soapenv:Envelope>\r\n"
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((self.SERVICEIP, self.SERVICEPORT))
@@ -57,15 +57,15 @@ class LoginActionTest:
 
         # 解析服务器返回的数据
         index = recv_buf.index("result_code=\"") + len("result_code=\"")
-        code = recv_buf[index:index+1]
+        code = recv_buf[index:index + 1]
 
         tgt = []
         if code == "0":
             idx = recv_buf.index("tgt=\"") + len("tgt=\"")
-            end = recv_buf.find('\"',idx)
+            end = recv_buf.find('\"', idx)
             tgt = recv_buf[idx:end]
 
-        #print recv_buf
+        # print recv_buf
         print tgt
 
         return tgt
@@ -104,7 +104,7 @@ class LoginActionTest:
             end = recv_buf.find('\"', idx)
             st = recv_buf[idx:end]
 
-        #print recv_buf
+        # print recv_buf
         print st
 
         return st
@@ -140,7 +140,7 @@ class LoginActionTest:
         end = recv_buf.find('\"', index)
         rtspurl = recv_buf[index:end]
 
-        #print recv_buf
+        # print recv_buf
         print rtspurl
 
         return rtspurl

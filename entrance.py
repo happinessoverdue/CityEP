@@ -9,12 +9,21 @@ import os
 import sys
 
 
-timerange = '6:30-8:30,11:30-13:30,15:21-16:55,17:29-18:55'
+timerange = '11:00-12:00,22:10-22:12,22:14-22:16,22:18-22:20'
 # 时间要求如字符串变量timerange所示
 # 时间区间以xx:xx-xx:xx的形式表示，每两个时间区间之间用','隔开
 # 注意时间区间为左闭右开区间
 startList = []
 endList = []
+
+# 创建登录连接 LoginActionTest：与camera连接
+loginActionTestList = []
+# 创建消息队列 MessageQueue：与警报消息接受端连接
+mqList = []
+# 进程队列,创建multipleprocessing.Process()
+prcList = []
+
+turnMod = 3
 
 
 def timeSolve():
@@ -60,11 +69,35 @@ def prcListInit(solvingList, loginActionTestList, mqList):
     return prclist
 
 
+def prcInit(idx):
+    prc = Process(target=Main.solving, args=(
+        loginActionTestList[idx], mqList[idx]))
+    return prc
+
+
+def pidConfigWrite(cameraIndex):
+    cfg = configparser.ConfigParser()
+    cfg.read('ProcessInfo.ini')
+    cfg.set("process", 'camera' + str(cameraIndex), '0')
+    cfg.write(open('ProcessInfo.ini', 'w'))
+
+
+def prcDetect():
+    print "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW11"
+    pcf = configparser.ConfigParser()
+    pcf.read("ProcessInfo.ini")
+    for idx in range(len(prcList)):
+        if prcList[idx].is_alive() == False:
+            prcList[idx] = Process(target=Main.solving, args=(
+                loginActionTestList[idx], mqList[idx]))
+            prcList[idx].start()
+            pcf.set(
+                'process', 'camera' + loginActionTestList[idx].CAMERAINDEXCODE, str(prcList[idx].pid))
+            pcf.write(open('ProcessInfo.ini', 'w'))
+            print "camera" + loginActionTestList[idx].CAMERAINDEXCODE + "pid:" + str(prcList[idx].pid) + "进程中断，重新初始化进程并启动"
+
+
 if __name__ == "__main__":
-    # 创建登录连接 LoginActionTest：与camera连接
-    loginActionTestList = []
-    # 创建消息队列 MessageQueue：与警报消息接受端连接
-    mqList = []
 
     # ccf means camera config
     ccf = configparser.ConfigParser()
@@ -85,8 +118,16 @@ if __name__ == "__main__":
         mqList.append(mq)
     print len(mqList)
 
-    solvingList = [0, 1, 2, 3, 4]
-    prcList = []
+    pcf = configparser.ConfigParser()
+    pcf.clear()
+    pcf.add_section('process')
+    pcf.set("process", 'entrance', str(os.getpid()))
+    for lat in loginActionTestList:
+        pcf.set("process", 'camera' + lat.CAMERAINDEXCODE, '0')
+    pcf.write(open('ProcessInfo.ini', 'w'))
+
+    solvingList = range(len(mqList))
+
     for solvingNo in solvingList:
         print loginActionTestList[solvingNo]
         print mqList[solvingNo]
@@ -98,43 +139,61 @@ if __name__ == "__main__":
     if len(startList) != len(endList):
         print "Time-range is on wrong status!"
         sys.exit()
+
+    turn = 0
     status = False
+
     while True:
+        turn = (turn + 1) % turnMod
+
         nt = time.localtime()
         isInTimeRange = timeJudge(nt[3], nt[4])
+
         if status == False and isInTimeRange:
             del prcList[:]
             prcList = prcListInit(solvingList, loginActionTestList, mqList)
-            fp = open("pidlist.txt", 'w')
-            fp.truncate()
+            # fp = open("pidlist.txt", 'w')
+            # fp.truncate()
             for i in solvingList:
                 prcList[i].start()
-                fp.write(str(prcList[i].pid) + ',')
+                pcf.set(
+                    'process', 'camera' + loginActionTestList[i].CAMERAINDEXCODE, str(prcList[i].pid))
+                pcf.write(open('ProcessInfo.ini', 'w'))
+                print loginActionTestList[i].CAMERAINDEXCODE
+                # fp.write(str(prcList[i].pid) + ',')
                 print '%d-th processing has been started' % i
-            fp.write(str(os.getpid()))
-            fp.close()
+            # fp.write(str(os.getpid()))
+            # fp.close()
             status = True
+        elif status == True and isInTimeRange:
+            if turn == 0:
+                print "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"
+                prcDetect()
+                print "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
         elif status == True and not isInTimeRange:
-            fexist = os.path.exists("pidlist.txt")
-            if fexist:
-                fp = open("pidlist.txt", 'w')
-                fp.truncate()
-                fp.write(str(os.getpid()))
-                fp.close()
+            # fexist = os.path.exists("pidlist.txt")
+            # if fexist:
+            #     fp = open("pidlist.txt", 'w')
+            #     fp.truncate()
+            #     fp.write(str(os.getpid()))
+            #     fp.close()
             for i in solvingList:
                 prcList[i].terminate()
+                pcf.set(
+                    'process', 'camera' + loginActionTestList[i].CAMERAINDEXCODE, '0')
                 print '%d-th processing has been terminated' % i
-            print "And Then has delete the subprocesses' pids in file named pidlist.txt"
+            pcf.write(open('ProcessInfo.ini', 'w'))
+            print "And Then has set the subprocesses' pids as 0 in file named ProcessInfo.ini"
             del prcList[:]
             status = False
         elif not isInTimeRange:
-            fexist = os.path.exists("pidlist.txt")
+            # fexist = os.path.exists("pidlist.txt")
             del prcList[:]
-            if fexist:
-                fp = open("pidlist.txt", 'w')
-                fp.truncate()
-                fp.write(str(os.getpid()))
-                fp.close()
+            # if fexist:
+            #     fp = open("pidlist.txt", 'w')
+            #     fp.truncate()
+            #     fp.write(str(os.getpid()))
+            #     fp.close()
         time.sleep(60)
 
 # for i in solvingList:
