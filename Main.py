@@ -13,29 +13,8 @@ import base64
 import os
 import MessageQueue as MQ
 import Login
-
-'''
-sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sk.settimeout(1)
-try:
-    MQ.sk.connect(('192.168.230.128', 6379))
-    print 'service is OK!'
-    # return True
-except Exception:
-    print 'service is NOT OK!'
-    MQ.sk.close()
-    os._exit(0)
-    # break
-    # return False
-finally:
-    sk.close()
-# requset = urllib2.Request('59.207.63.1')
-# try:
-    # urllib2.urlopen(requset)
-# except urllib2.URLError, e:
-    # print e.reason
-    # break
-'''
+from PIL import Image
+import configparser
 
 
 def solving(loginActionTest, mq):
@@ -44,19 +23,21 @@ def solving(loginActionTest, mq):
     # loginActionTest = Login.LoginActionTest('001097', 'admin',  \
     #                                        'f8aa14da2301e201e817f5b8667a36bb40c8ca49da69b3470a74d0f4ec194961',  \
     #                                        '123.160.220.40', 8033, '/services/VmsSdkWebService')
-    # loginActionTest = Login.LoginActionTest('001108', 'admin',
-    #                                        'f8aa14da2301e201e817f5b8667a36bb40c8ca49da69b3470a74d0f4ec194961',
-    #                                       '59.207.63.1', 8033, '/services/VmsSdkWebService')
     tgt = loginActionTest.sdkLogin()
     st = loginActionTest.applyToken(tgt)
     rtspurl = loginActionTest.getRtspURL(tgt, st)
-
+    serverip = '10.41.20.46'
     # 创建检测器
-    ivp = IVP.IntelligentVideoProcess()
-
+    cameraNo = 'camera' + (str(loginActionTest.CAMERAINDEXCODE))
+    cfg = configparser.ConfigParser()
+    cfg.read('PythonInterface.ini')
+    interfacefn = cfg.get('matching', cameraNo)
+    interfacefn = str(interfacefn)
+    print 'INTERFACEINTERFACEINTERFACEINTERFACEINTERFACEINTERFACEINTERFACE:'
+    print interfacefn
+    ivp = IVP.IntelligentVideoProcess(interfacefn)
     # 创建消息队列
     # mq = MQ.MessageQueue('skyeye-video', 'videoAnalysis!', '123.160.220.40')
-    #mq = MQ.MessageQueue('skyeye-video', 'videoAnalysis!', '59.207.34.160')
     mq.buildConnAndQueue()
 
     # 读取图像
@@ -68,65 +49,68 @@ def solving(loginActionTest, mq):
     timeInterval = 4  # 相同类之间忽略次数
     timeframe = 60
     n = 1
-    netagain = 5  # 网络重连次数
+    oldminute = ''
     while (True):
         # Capture frame-by-frame
         # try:
         ret, frame = cap.read()
-        try:
-            frame
-        except:
-            n += 1
-            if n > netagain:
-                print 'Please check the network'
-                break
-
-            tgt = loginActionTest.sdkLogin()
-            st = loginActionTest.applyToken(tgt)
-            rtspurl = loginActionTest.getRtspURL(tgt, st)
-
-            # 创建检测器
-            ivp = IVP.IntelligentVideoProcess()
-
-            # 创建消息队列
-            mq.buildConnAndQueue()
-
-            # 读取图像
-            cap = cv2.VideoCapture(rtspurl)
-
-            frame_num = 0
-            oldcls = 6
-            r = 1
-            timeInterval = 4
-            timeframe = 60
 
         readtime = datetime.datetime.now()  # 当前帧读取时间
 
         image = []
-
+       # oldminute = ''
         # except Exception, e:
         # print 'check the network'
         # continue
         if frame_num >= timeframe:
             image = img_as_float(frame).astype(np.float32)
             ivp.detectEnvViolation(image)
-            print ivp.cls, ivp.prob
+            print ivp.cls, ivp.prob,str(loginActionTest.CAMERAINDEXCODE)
             endtime = datetime.datetime.now()
             # print (endtime-readtime).total_seconds()
             # print (endtime-readtime).microseconds / 1000
             # print str((endtime-readtime).microseconds / 1000)
 
+            #每分钟发送一次状态信息
+           # oldminute = ' '
+            minute = endtime.strftime("%M")
+
+            status = {}
+            status['serverIp'] = serverip
+            status['serviceStatus'] = '1'
+            status['serverTime'] = endtime.strftime("%Y-%m-%d %H:%M:%S")
+            # minute = currenttime.strftime("%M")
+            # if oldminute
+            # print type(minute)
+            status['cameraIndexCode'] = str(loginActionTest.CAMERAINDEXCODE)
+            if oldminute != minute:
+                 mq.sendStatus(JSONEncoder().encode(status))
+                 print JSONEncoder().encode(status)
+                 oldminute = minute
+                 print oldminute
+
             frame_num = 0
+            new_img = ivp.new_img
+            if ivp.cls > 0 and ivp.cls <= 4:
+              gray = Image.fromarray(new_img)
+              gray = gray.convert('L')
+              gray = np.array(gray)
+              ret, th = cv2.threshold(gray, 127, 255, cv2.THRESH_OTSU)
+              x, y, w, h = cv2.boundingRect(th)
+              cv2.rectangle(frame, (x, y), (x+w, y+h),(0, 0, 255), 10)
             msg = {}
             msg['cameraIndexCode'] = str(loginActionTest.CAMERAINDEXCODE)
             msg['serverIp'] = loginActionTest.SERVICEIP
             msg['monitorType'] = 'M' + "%03d" % ivp.cls
             msg['probability'] = "%.4f" % ivp.prob
 
-            if ivp.cls == 0:
+            if ivp.prob < 0.3:
+                continue
+            if (ivp.cls == 0) or (ivp.cls == 2):
                 oldcls = 6
                 r = 1
                 continue
+
             # type img: cv::mat
             # encode image from cv::mat
             img_encode = cv2.imencode('.png', frame)[1]
@@ -161,40 +145,36 @@ def solving(loginActionTest, mq):
                     mq.sendMsg(JSONEncoder().encode(msg))
                     oldcls = ivp.cls
                     r = 1
-                    print ivp.cls, ivp.prob
+                    print ivp.cls, ivp.prob,str(loginActionTest.CAMERAINDEXCODE)
             else:
-                if ivp.cls == 0:
-                    r = 1
-                    oldcls = 6
-                    continue
-                else:
-                    mq.sendMsg(JSONEncoder().encode(msg))
-                    oldcls = ivp.cls
-                    r = 1
-                print ivp.cls, ivp.prob
 
-            status = {}
-            status[''] = loginActionTest.SERVICEIP
-            status[''] = endtime.strftime(
-                "%Y-%m-%d %H:%M:%S") + ' ' + str(endtime.microsecond / 1000)
-            status[''] = '1'
+                mq.sendMsg(JSONEncoder().encode(msg))
+                oldcls = ivp.cls
+                r = 1
+                print ivp.cls, ivp.prob,str(loginActionTest.CAMERAINDEXCODE)
+
+           # status = {}
+           # status[''] = loginActionTest.SERVICEIP
+           # status[''] = endtime.strftime(
+            #    "%Y-%m-%d %H:%M:%S") + ' ' + str(endtime.microsecond / 1000)
+           # status[''] = '1'
             # mq.sendStatus(JSONEncoder().encode(status))
 
             # save images
-            imgpath = './CAMERA' + str(loginActionTest.CAMERAINDEXCODE)
-            filename = imgpath + '/' + \
-                readtime.strftime("%Y-%m-%d-%H-%M-%S-") + \
-                str(readtime.microsecond / 1000) + '.jpg'
-            isExists = os.path.exists(imgpath)
-            if not isExists:
-                os.mkdir(imgpath)
+            ##imgpath = './CAMERA' + str(loginActionTest.CAMERAINDEXCODE)
+            ##filename = imgpath + '/' + \
+               ## readtime.strftime("%Y-%m-%d-%H-%M-%S-") + \
+                ##str(readtime.microsecond / 1000) + '.jpg'
+            ##isExists = os.path.exists(imgpath)
+           ## if not isExists:
+             ##   os.mkdir(imgpath)
             # filename = './recorded/' + \
             #     readtime.strftime("%Y-%m-%d-%H-%M-%S-") + \
             #     str(readtime.microsecond / 1000) + '.jpg'
-            print '\033[1;31;40m'
-            print filename
-            print '\033[0m'
-            cv2.imwrite(filename, frame)
+           ## print '\033[1;31;40m'
+           ## print filename
+           ## print '\033[0m'
+           ## cv2.imwrite(filename, frame)
 
         else:
             frame_num = frame_num + 1
@@ -231,7 +211,7 @@ if __name__ == "__main__":
     mcf.read('SingleMessageServer.ini')
     for sec in mcf.sections():
         mlist = ucode2utf(mcf.items(sec))
-        mq = MQ.MessageQueue(mlist[0], mlist[1], mlist[2])
+        mq = MQ.MessageQueue(mlist[0], mlist[1], mlist[2],mlist[3])
         mqList.append(mq)
     print len(mqList)
     pcf = configparser.ConfigParser()

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # coding:utf-8
 from multiprocessing import *
 import Login
@@ -9,7 +10,7 @@ import os
 import sys
 
 
-timerange = '11:00-12:00,22:10-22:12,22:14-22:16,22:18-22:20'
+timerange = '8:00-18:30'
 # 时间要求如字符串变量timerange所示
 # 时间区间以xx:xx-xx:xx的形式表示，每两个时间区间之间用','隔开
 # 注意时间区间为左闭右开区间
@@ -105,7 +106,7 @@ if __name__ == "__main__":
     for sec in ccf.sections():
         clist = ucode2utf(ccf.items(sec))
         loginActionTest = Login.LoginActionTest(
-            clist[0], clist[1], clist[2], clist[3], int(clist[4]), clist[5])
+            clist[0], clist[1], clist[2], clist[3],int(clist[4]), clist[5])
         loginActionTestList.append(loginActionTest)
     print len(loginActionTestList)
 
@@ -114,7 +115,7 @@ if __name__ == "__main__":
     mcf.read('MessageServer.ini')
     for sec in mcf.sections():
         mlist = ucode2utf(mcf.items(sec))
-        mq = MQ.MessageQueue(mlist[0], mlist[1], mlist[2])
+        mq = MQ.MessageQueue(mlist[0], mlist[1], mlist[2],mlist[3])
         mqList.append(mq)
     print len(mqList)
 

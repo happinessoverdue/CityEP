@@ -1,22 +1,28 @@
-#coding=utf-8
+# coding=utf-8
 
 import sys
 
 # import scene classifier
-#sys.path.append("/home/lvp/MRCNN-Scene-Recognition-master/caffe/python")
-#sys.path.append("/home/lvp/MRCNN-Scene-Recognition-master-20171212/caffe/build/install/python")
+# sys.path.append("/home/lvp/MRCNN-Scene-Recognition-master/caffe/python")
+# sys.path.append("/home/lvp/MRCNN-Scene-Recognition-master-20171212/caffe/build/install/python")
 sys.path.append("/home/htr/MRCNN-Scene-Recognition-master/caffe/python")
-import classify_1210_Interface as cls_interface
+
 
 class IntelligentVideoProcess:
 
     cls = []  # 环境违法行为的类别
     prob = 0.0  # 环境违法行为对应的概率
     log = []
-
+    cls_interface = []
+    new_img = 0.0
     # 检测不同类型的环境违法行为
+
+    def __init__(self, interfacefn):
+        IntelligentVideoProcess.cls_interface = __import__(interfacefn)
+
     def detectEnvViolation(self, image):
-        self.cls, self.prob = cls_interface.classify(image)
+        self.cls, self.prob,self.new_img = IntelligentVideoProcess.cls_interface.classify(
+            image)
         self.determine_phenomenon(self.cls, self.prob)
 
     # 环境违法行为判定q
@@ -36,5 +42,4 @@ class IntelligentVideoProcess:
 
         self.log = str_log
 
-        #print self.log
-
+        # print self.log
